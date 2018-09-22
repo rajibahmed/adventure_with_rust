@@ -1,0 +1,6 @@
+[package]
+name = "adventure"
+version = "0.1.0"
+authors = ["Rajib Ahmed <rajib.ahmed@klarna.com>"]
+
+[dependencies]
