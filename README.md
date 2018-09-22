@@ -15,7 +15,6 @@ And I like the complexity of the program a lot.
 
 * Players can connect over tcp to play the game
 
-
 ## What I want to Learn
 
 * General differences between rust and CPP.
@@ -25,4 +24,3 @@ And I like the complexity of the program a lot.
 * Understand how borrowing works
 
 * Debugging rust application
-
