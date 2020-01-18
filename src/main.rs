@@ -1,11 +1,12 @@
-mod game;
-mod player;
+use std::io::{self, Result, Write};
+//promod game;
+mod user_input;
 
-fn main() {
+fn main() -> Result<()> {
     println!("Starting the game !!!");
-    game::load();
-    game::parse();
-    let player1 = player::build_user("rajib".to_string());
-    player1.say_hello();
-    player1.where_am_i();
+    //println!("{}", game::parse());
+    print!("{}", "> ");
+    io::stdout().flush().unwrap();
+    println!("{}", user_input::get());
+    Ok(())
 }

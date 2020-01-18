@@ -1,22 +1,25 @@
-pub fn build_user(name: String) -> Player {
+pub fn new(name: String) -> Player {
     Player {
         name: name,
         initial_location: 0,
         current_location: 0,
-        object: "stick".to_string()
+        object: "stick".to_string(),
     }
 }
 
-pub struct Player{
-    pub name:  String,
+pub struct Player {
+    pub name: String,
     pub initial_location: u8,
     pub current_location: u8,
-    pub object: String
+    pub object: String,
 }
 
 impl<'a> Player {
     pub fn say_hello(&self) {
-        println!("hello {} with location of {}", self.name, self.initial_location);
+        println!(
+            "hello {} with location of {}",
+            self.name, self.initial_location
+        );
     }
 
     pub fn where_am_i(&self) {
