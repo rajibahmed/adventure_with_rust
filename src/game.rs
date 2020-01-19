@@ -30,6 +30,7 @@ pub fn parse() -> GameMap {
         }
         match section {
             1 => parse_location(line, &mut locations),
+            3 => parse_travel_table(line),
             _ => (),
         }
     }
@@ -40,12 +41,26 @@ pub fn parse() -> GameMap {
 fn load() -> String {
     read_to_string(Path::new("./src/advent.dat")).expect("Somethis whent wrong")
 }
+fn parse_travel_table(line: &str) {
+    let line_iter: Vec<String> = line
+        .split_whitespace()
+        .map(|s| s.trim().to_string())
+        .collect();
+    if line_iter.len() == 1 {
+        return;
+    }
+    let _x = &line_iter[0];
+    let _y = &line_iter[1];
+}
 
 fn parse_location(line: &str, locations: &mut HashMap<String, String>) {
     let mut line_iter: Vec<String> = line
         .split_whitespace()
         .map(|s| s.trim_start().to_string())
         .collect();
+    if line_iter.len() == 1 {
+        return;
+    }
 
     let position = line_iter.remove(0);
     let description = line_iter.join(" ");
