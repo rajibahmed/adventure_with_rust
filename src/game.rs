@@ -19,30 +19,8 @@ impl GameMap {
     }
 }
 
-pub fn load(filename: String) -> String {
-    let path = Path::new(&filename);
-    read_to_string(path).expect("Somethis whent wrong")
-}
-
-fn parse_location(line: String, locations: &mut HashMap<String, String>) {
-    let mut line_iter: Vec<String> = line
-        .split_whitespace()
-        .map(|s| s.trim().to_string())
-        .collect();
-
-    let position = line_iter.remove(0);
-    let description = line_iter.join(" ");
-
-    if locations.contains_key(&position) {
-        let update_with = locations.get(&position).unwrap().to_owned();
-        *locations.get_mut(&position).unwrap() = [update_with, description].join(" ")
-    } else {
-        locations.insert(position, description);
-    }
-}
-
 pub fn parse() -> GameMap {
-    let game_data = load("./src/advent.dat".to_string());
+    let game_data = load();
     let mut locations: HashMap<String, String> = HashMap::new();
 
     let mut section = 1;
@@ -57,4 +35,25 @@ pub fn parse() -> GameMap {
     }
 
     GameMap::new(locations)
+}
+
+fn load() -> String {
+    read_to_string(Path::new("./src/advent.dat")).expect("Somethis whent wrong")
+}
+
+fn parse_location(line: String, locations: &mut HashMap<String, String>) {
+    let mut line_iter: Vec<String> = line
+        .split_whitespace()
+        .map(|s| s.trim_start().to_string())
+        .collect();
+
+    let position = line_iter.remove(0);
+    let description = line_iter.join(" ");
+
+    if locations.contains_key(&position) {
+        let update_with = locations.get(&position).unwrap().to_owned();
+        *locations.get_mut(&position).unwrap() = [update_with, description].join("\n")
+    } else {
+        locations.insert(position, description);
+    }
 }
