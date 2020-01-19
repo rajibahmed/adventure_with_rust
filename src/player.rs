@@ -1,19 +1,20 @@
 pub fn new(name: String) -> Player {
     Player {
         name: name,
-        initial_location: 0,
-        current_location: 0,
+        initial_location: "1".to_string(),
+        current_location: "1".to_string(),
         object: "stick".to_string(),
     }
 }
 
 pub struct Player {
     pub name: String,
-    pub initial_location: u8,
-    pub current_location: u8,
+    pub initial_location: String,
+    pub current_location: String,
     pub object: String,
 }
 
+#[allow(dead_code)]
 impl<'a> Player {
     pub fn say_hello(&self) {
         println!(
