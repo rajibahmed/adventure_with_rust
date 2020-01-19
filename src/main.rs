@@ -6,7 +6,7 @@ mod user_input;
 fn main() {
     println!("Starting the game !!!");
     let game_map = game::parse();
-    let player1 = player::new("Rajib");
+    let player1 = player::Player::new("Rajib");
     loop {
         println!(
             "> {}",

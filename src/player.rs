@@ -1,17 +1,28 @@
-pub fn new(name: &str) -> Player {
-    Player {
-        name: name.to_string(),
-        initial_location: "1".to_string(),
-        current_location: "1".to_string(),
-        object: "stick".to_string(),
-    }
-}
-
 pub struct Player {
     pub name: String,
     pub initial_location: String,
     pub current_location: String,
     pub object: String,
+}
+
+impl Player {
+    pub fn new(name: &str) -> Player {
+        Player {
+            name: name.to_string(),
+            ..Default::default()
+        }
+    }
+}
+
+impl Default for Player {
+    fn default() -> Self {
+        Player {
+            name: "".to_string(),
+            initial_location: "1".to_string(),
+            current_location: "1".to_string(),
+            object: "".to_string(),
+        }
+    }
 }
 
 #[allow(dead_code)]
