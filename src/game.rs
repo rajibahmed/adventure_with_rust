@@ -30,12 +30,14 @@ fn parse_location(line: String, locations: &mut HashMap<String, String>) {
         .map(|s| s.trim().to_string())
         .collect();
 
-    let location = (line_iter.remove(0), line_iter.join(" "));
-    if locations.contains_key(&location.0) {
-        let update_with = locations.get(&location.0).unwrap().to_owned();
-        *locations.get_mut(&location.0).unwrap() = [update_with, location.1].join(" ")
+    let position = line_iter.remove(0);
+    let description = line_iter.join(" ");
+
+    if locations.contains_key(&position) {
+        let update_with = locations.get(&position).unwrap().to_owned();
+        *locations.get_mut(&position).unwrap() = [update_with, description].join(" ")
     } else {
-        locations.insert(location.0, location.1);
+        locations.insert(position, description);
     }
 }
 
