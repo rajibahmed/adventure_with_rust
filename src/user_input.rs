@@ -4,16 +4,23 @@ pub enum Direction {
     UP,
 }
 
+impl Default for Direction {
+    fn default() -> Self {
+        Direction::UP
+    }
+}
+
+#[derive(Default)]
 pub struct Input {
     pub verb: String,
     pub direction: Direction,
 }
 
 impl Input {
-    fn new(verb: String, direction: Direction) -> Input {
+    fn new(verb: String) -> Input {
         Input {
             verb: verb,
-            direction: direction,
+            ..Default::default()
         }
     }
 }
@@ -31,5 +38,5 @@ pub fn get() -> Input {
         .map(str::to_string)
         .collect();
 
-    Input::new(inputs.remove(0), Direction::UP)
+    Input::new(inputs.remove(0))
 }
