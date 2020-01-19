@@ -1,6 +1,6 @@
-pub fn new(name: String) -> Player {
+pub fn new(name: &str) -> Player {
     Player {
-        name: name,
+        name: name.to_string(),
         initial_location: "1".to_string(),
         current_location: "1".to_string(),
         object: "stick".to_string(),

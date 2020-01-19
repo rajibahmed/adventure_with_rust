@@ -29,7 +29,7 @@ pub fn parse() -> GameMap {
             section = section + 1;
         }
         match section {
-            1 => parse_location(line.to_string(), &mut locations),
+            1 => parse_location(line, &mut locations),
             _ => (),
         }
     }
@@ -41,7 +41,7 @@ fn load() -> String {
     read_to_string(Path::new("./src/advent.dat")).expect("Somethis whent wrong")
 }
 
-fn parse_location(line: String, locations: &mut HashMap<String, String>) {
+fn parse_location(line: &str, locations: &mut HashMap<String, String>) {
     let mut line_iter: Vec<String> = line
         .split_whitespace()
         .map(|s| s.trim_start().to_string())
