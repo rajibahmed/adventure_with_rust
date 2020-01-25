@@ -16,6 +16,7 @@ fn main() {
                 .unwrap()
                 .trim()
         );
+
         print!("~ ");
         io::stdout().flush().unwrap();
         let location = player1.location.parse::<u32>().unwrap();
