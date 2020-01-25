@@ -22,7 +22,7 @@ use std::{fs::read_to_string, path::Path};
 //	100 OBJECTS
 
 #[derive(Debug)]
-struct Node {
+pub struct Node {
     x: i32,
     y: i32,
     motions: Vec<i32>,
@@ -36,6 +36,11 @@ impl Node {
             motions: motions,
         }
     }
+
+    #[allow(dead_code)]
+    fn can_move(&self) -> bool {
+        self.y <= 300
+    }
 }
 
 #[allow(dead_code)]
@@ -43,12 +48,20 @@ struct Element {}
 
 pub struct GameMap {
     pub locations: HashMap<String, String>,
+    pub vocabulary: HashMap<String, String>,
+    pub maps: Vec<Node>,
 }
 
 impl GameMap {
-    fn new(locations: HashMap<String, String>) -> GameMap {
+    fn new(
+        locations: HashMap<String, String>,
+        maps: Vec<Node>,
+        vocabulary: HashMap<String, String>,
+    ) -> GameMap {
         GameMap {
             locations: locations,
+            maps: maps,
+            vocabulary: vocabulary,
         }
     }
 }
@@ -57,6 +70,7 @@ pub fn parse() -> GameMap {
     let game_data = load();
     let mut locations: HashMap<String, String> = HashMap::new();
     let mut maps: Vec<Node> = Vec::new();
+    let mut vocabulary: HashMap<String, String> = HashMap::new();
 
     let mut section = 1;
     for line in game_data.lines() {
@@ -69,12 +83,12 @@ pub fn parse() -> GameMap {
                 Some(node) => maps.push(node),
                 None => (),
             },
+            4 => parse_vocabulary(line, &mut vocabulary),
             _ => (),
         }
     }
 
-    println!("{:?}", maps[3]);
-    GameMap::new(locations)
+    GameMap::new(locations, maps, vocabulary)
 }
 
 fn load() -> String {
@@ -153,4 +167,18 @@ fn parse_location(line: &str, locations: &mut HashMap<String, String>) {
     } else {
         locations.insert(position, description);
     }
+}
+
+fn parse_vocabulary(line: &str, vocabulary: &mut HashMap<String, String>) {
+    let mut line_iter: Vec<String> = line
+        .split_whitespace()
+        .map(|s| s.trim_start().to_string())
+        .collect();
+    if line_iter.len() == 1 {
+        return;
+    }
+
+    let value = line_iter.remove(0);
+    let verb = line_iter.join(" ");
+    vocabulary.insert(verb, value);
 }
