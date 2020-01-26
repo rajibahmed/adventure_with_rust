@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub struct Player {
     pub name: String,
     pub location: String,

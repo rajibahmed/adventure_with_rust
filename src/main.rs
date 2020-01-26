@@ -4,7 +4,18 @@ mod player;
 mod user_input;
 
 fn main() {
-    println!("Starting the game !!!");
+    println!(
+        r#"
+     _______  ______            _______  _       _________          _______  _______ 
+    (  ___  )(  __  \ |\     /|(  ____ \( (    /|\__   __/|\     /|(  ____ )(  ____ \ 
+    | (   ) || (  \  )| )   ( || (    \/|  \  ( |   ) (   | )   ( || (    )|| (    \/
+    | (___) || |   ) || |   | || (__    |   \ | |   | |   | |   | || (____)|| (__    
+    |  ___  || |   | |( (   ) )|  __)   | (\ \) |   | |   | |   | ||     __)|  __)   
+    | (   ) || |   ) | \ \_/ / | (      | | \   |   | |   | |   | || (\ (   | (      
+    | )   ( || (__/  )  \   /  | (____/\| )  \  |   | |   | (___) || ) \ \__| (____/\
+    |/     \|(______/    \_/   (_______/|/    )_)   )_(   (_______)|/   \__/(_______/
+                                                                                     "#
+    );
     let game_map = game::parse();
     let mut gamer = player::Player::new("Rajib");
     loop {
@@ -28,6 +39,6 @@ fn main() {
 
         gamer.verb = input.verb.to_string();
 
-        println!("{:?}", game_map.maps.get(&1.to_string()).unwrap());
+        game_map.change_location(&gamer);
     }
 }

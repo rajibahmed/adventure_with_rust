@@ -22,7 +22,7 @@ use player::Player;
 //	300 LOCATIONS
 //	100 OBJECTS
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Node {
     x: i32,
     y: i32,
@@ -64,6 +64,16 @@ impl GameMap {
             maps: maps,
             vocabulary: vocabulary,
         }
+    }
+
+    pub fn change_location(&self, gamer: &Player) {
+        let verb = &self.vocabulary.get(&gamer.verb).unwrap();
+        let nodes = &self.maps.get(&gamer.location).unwrap();
+
+        let node = nodes
+            .iter()
+            .find(|&n| n.motions.iter().any(|&m| m.to_string() == verb.trim()));
+        println!("{:?}", node);
     }
 }
 
