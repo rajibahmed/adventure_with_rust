@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::{fs::read_to_string, path::Path};
 
+use player::Player;
 //  ADVENTURES
 //
 //  CURRENT LIMITS:
@@ -63,6 +64,18 @@ impl GameMap {
             maps: maps,
             vocabulary: vocabulary,
         }
+    }
+
+    pub fn next_position(&self, verb: &str) -> bool {
+        let value = self.vocabulary.get(&verb.to_string()).unwrap();
+        self.maps[0]
+            .motions
+            .contains(&value.parse::<i32>().unwrap())
+    }
+
+    pub fn change_location(&self, gamer: &mut Player) {
+        let new_loc = gamer.location.parse::<i32>().unwrap() + 1;
+        gamer.location = new_loc.to_string();
     }
 }
 

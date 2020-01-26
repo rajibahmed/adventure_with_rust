@@ -1,7 +1,7 @@
 pub struct Player {
     pub name: String,
     pub location: String,
-    pub object: String,
+    pub verb: String,
 }
 
 impl Player {
@@ -18,22 +18,7 @@ impl Default for Player {
         Player {
             name: "".to_string(),
             location: "1".to_string(),
-            object: "".to_string(),
-        }
-    }
-}
-
-#[allow(dead_code)]
-impl<'a> Player {
-    pub fn say_hello(&self) {
-        println!("hello {} with location of {}", self.name, self.location);
-    }
-
-    pub fn where_am_i(&self) {
-        if self.object.is_empty() {
-            println!("You are at {}", self.location);
-        } else {
-            println!("You are at {} with {}", self.location, self.object);
+            verb: "".to_string(),
         }
     }
 }
