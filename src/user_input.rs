@@ -19,7 +19,7 @@ pub struct Input {
 impl Input {
     fn new(verb: String) -> Input {
         Input {
-            verb: verb,
+            verb: verb.to_uppercase(),
             ..Default::default()
         }
     }

@@ -11,7 +11,7 @@ fn main() {
         println!(
             "> {}",
             game_map
-                .locations
+                .descriptions
                 .get(&gamer.location.to_string())
                 .unwrap()
                 .trim()
@@ -27,6 +27,7 @@ fn main() {
         }
 
         gamer.verb = input.verb.to_string();
-        game_map.change_location(&mut gamer);
+
+        println!("{:?}", game_map.maps.get(&1.to_string()).unwrap());
     }
 }

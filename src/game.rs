@@ -22,7 +22,7 @@ use player::Player;
 //	300 LOCATIONS
 //	100 OBJECTS
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Node {
     x: i32,
     y: i32,
@@ -48,41 +48,29 @@ impl Node {
 struct Element {}
 
 pub struct GameMap {
-    pub locations: HashMap<String, String>,
+    pub descriptions: HashMap<String, String>,
     pub vocabulary: HashMap<String, String>,
-    pub maps: Vec<Node>,
+    pub maps: HashMap<String, Vec<Node>>,
 }
 
 impl GameMap {
     fn new(
-        locations: HashMap<String, String>,
-        maps: Vec<Node>,
+        descriptions: HashMap<String, String>,
+        maps: HashMap<String, Vec<Node>>,
         vocabulary: HashMap<String, String>,
     ) -> GameMap {
         GameMap {
-            locations: locations,
+            descriptions: descriptions,
             maps: maps,
             vocabulary: vocabulary,
         }
-    }
-
-    pub fn next_position(&self, verb: &str) -> bool {
-        let value = self.vocabulary.get(&verb.to_string()).unwrap();
-        self.maps[0]
-            .motions
-            .contains(&value.parse::<i32>().unwrap())
-    }
-
-    pub fn change_location(&self, gamer: &mut Player) {
-        let new_loc = gamer.location.parse::<i32>().unwrap() + 1;
-        gamer.location = new_loc.to_string();
     }
 }
 
 pub fn parse() -> GameMap {
     let game_data = load();
-    let mut locations: HashMap<String, String> = HashMap::new();
-    let mut maps: Vec<Node> = Vec::new();
+    let mut descriptions: HashMap<String, String> = HashMap::new();
+    let mut maps: HashMap<String, Vec<Node>> = HashMap::new();
     let mut vocabulary: HashMap<String, String> = HashMap::new();
 
     let mut section = 1;
@@ -91,17 +79,14 @@ pub fn parse() -> GameMap {
             section = section + 1;
         }
         match section {
-            1 => parse_location(line, &mut locations),
-            3 => match parse_travel_table(line) {
-                Some(node) => maps.push(node),
-                None => (),
-            },
+            1 => parse_location(line, &mut descriptions),
+            3 => parse_travel_table(line, &mut maps),
             4 => parse_vocabulary(line, &mut vocabulary),
             _ => (),
         }
     }
 
-    GameMap::new(locations, maps, vocabulary)
+    GameMap::new(descriptions, maps, vocabulary)
 }
 
 fn load() -> String {
@@ -140,14 +125,14 @@ fn load() -> String {
 //	THIS SAYS THAT, FROM 11, 49 TAKES HIM TO 8 UNLESS PROP(3)=0, IN WHICH
 //	CASE HE GOES TO 9.  VERB 50 TAKES HIM TO 9 REGARDLESS OF PROP(3).
 
-fn parse_travel_table(line: &str) -> Option<Node> {
+fn parse_travel_table(line: &str, maps: &mut HashMap<String, Vec<Node>>) {
     let line_iter: Vec<String> = line
         .split_whitespace()
         .map(|s| s.trim().to_string())
         .collect();
 
     if line_iter.len() == 1 {
-        return None;
+        return;
     }
 
     let x = &line_iter[0].to_string().parse::<i32>().unwrap().clone();
@@ -155,11 +140,18 @@ fn parse_travel_table(line: &str) -> Option<Node> {
 
     let mut motions: Vec<i32> = vec![];
 
+    let mut nodes: Vec<Node> = Vec::new();
+
     for i in line_iter.iter().skip(2) {
         motions.push(i.to_string().parse::<i32>().unwrap());
     }
 
-    Some(Node::new(*x, *y, motions))
+    let check_location = x.to_string();
+    if maps.contains_key(&check_location) {
+        nodes = maps.get(&check_location).unwrap().to_vec();
+    }
+    nodes.push(Node::new(*x, *y, motions));
+    maps.insert(x.to_string(), nodes);
 }
 
 fn parse_location(line: &str, locations: &mut HashMap<String, String>) {
