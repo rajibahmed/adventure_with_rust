@@ -38,6 +38,10 @@ fn main() {
             println!("Sorry to see you go!!");
             break;
         }
+        if !game_map.vocabulary.contains_key(&input.verb) {
+            println!("Not a valid input: {}", input.verb);
+            continue;
+        }
 
         gamer = gamer.update_verb(input.verb.to_string());
         let change_to: Option<&Node> = game_map.change_location(&gamer);
