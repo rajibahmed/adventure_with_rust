@@ -38,6 +38,10 @@ impl Node {
         }
     }
 
+    pub fn next_location(&self) -> i32 {
+        self.y
+    }
+
     #[allow(dead_code)]
     fn can_move(&self) -> bool {
         self.y <= 300
@@ -66,14 +70,14 @@ impl GameMap {
         }
     }
 
-    pub fn change_location(&self, gamer: &Player) {
+    pub fn change_location(&self, gamer: &Player) -> Option<&Node> {
         let verb = &self.vocabulary.get(&gamer.verb).unwrap();
         let nodes = &self.maps.get(&gamer.location).unwrap();
 
         let node = nodes
             .iter()
             .find(|&n| n.motions.iter().any(|&m| m.to_string() == verb.trim()));
-        println!("{:?}", node);
+        node
     }
 }
 

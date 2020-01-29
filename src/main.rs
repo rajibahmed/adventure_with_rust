@@ -1,7 +1,9 @@
-use std::io::{self, Write};
 mod game;
+use std::io::{self, Write};
 mod player;
 mod user_input;
+
+use game::Node;
 
 fn main() {
     println!(
@@ -23,7 +25,7 @@ fn main() {
             "> {}",
             game_map
                 .descriptions
-                .get(&gamer.location.to_string())
+                .get(&gamer.get_location())
                 .unwrap()
                 .trim()
         );
@@ -37,8 +39,8 @@ fn main() {
             break;
         }
 
-        gamer.verb = input.verb.to_string();
-
-        game_map.change_location(&gamer);
+        gamer = gamer.update_verb(input.verb.to_string());
+        let change_to: Option<&Node> = game_map.change_location(&gamer);
+        gamer = gamer.update_location(change_to.unwrap());
     }
 }
