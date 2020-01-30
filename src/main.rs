@@ -38,7 +38,7 @@ fn main() {
             println!("Sorry to see you go!!");
             break;
         }
-        if !game_map.vocabulary.contains_key(&input.verb) {
+        if !game_map.valid_verb(&input.verb) {
             println!("Not a valid input: {}", input.verb);
             continue;
         }

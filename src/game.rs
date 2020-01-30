@@ -71,13 +71,17 @@ impl GameMap {
     }
 
     pub fn change_location(&self, gamer: &Player) -> Option<&Node> {
-        let verb = &self.vocabulary.get(&gamer.verb).unwrap();
-        let nodes = &self.maps.get(&gamer.location).unwrap();
+        let verb = self.vocabulary.get(&gamer.verb).unwrap();
+        let nodes = self.maps.get(&gamer.location).unwrap();
 
         let node = nodes
             .iter()
             .find(|&n| n.motions.iter().any(|&m| m.to_string() == verb.trim()));
         node
+    }
+
+    pub fn valid_verb(&self, verb: &String) -> bool {
+        self.vocabulary.contains_key(verb)
     }
 }
 
