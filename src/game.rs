@@ -96,15 +96,26 @@ pub fn parse() -> GameMap {
         if line.starts_with("-1") {
             section = section + 1;
         }
+
+        let line_iter = splitLine(line);
+        if line_iter.len() == 1 {
+            continue;
+        }
         match section {
-            1 => parse_location(line, &mut descriptions),
-            3 => parse_travel_table(line, &mut maps),
-            4 => parse_vocabulary(line, &mut vocabulary),
+            1 => parse_location(line_iter, &mut descriptions),
+            3 => parse_travel_table(line_iter, &mut maps),
+            4 => parse_vocabulary(line_iter, &mut vocabulary),
             _ => (),
         }
     }
 
     GameMap::new(descriptions, maps, vocabulary)
+}
+
+fn splitLine(line: &str) -> Vec<String> {
+    line.split_whitespace()
+        .map(|s| s.trim().to_string())
+        .collect()
 }
 
 fn load() -> String {
@@ -143,16 +154,7 @@ fn load() -> String {
 //	THIS SAYS THAT, FROM 11, 49 TAKES HIM TO 8 UNLESS PROP(3)=0, IN WHICH
 //	CASE HE GOES TO 9.  VERB 50 TAKES HIM TO 9 REGARDLESS OF PROP(3).
 
-fn parse_travel_table(line: &str, maps: &mut HashMap<String, Vec<Node>>) {
-    let line_iter: Vec<String> = line
-        .split_whitespace()
-        .map(|s| s.trim().to_string())
-        .collect();
-
-    if line_iter.len() == 1 {
-        return;
-    }
-
+fn parse_travel_table(line_iter: Vec<String>, maps: &mut HashMap<String, Vec<Node>>) {
     let x = &line_iter[0].to_string().parse::<i32>().unwrap().clone();
     let y = &line_iter[1].to_string().parse::<i32>().unwrap().clone();
 
@@ -172,17 +174,9 @@ fn parse_travel_table(line: &str, maps: &mut HashMap<String, Vec<Node>>) {
     maps.insert(x.to_string(), nodes);
 }
 
-fn parse_location(line: &str, locations: &mut HashMap<String, String>) {
-    let mut line_iter: Vec<String> = line
-        .split_whitespace()
-        .map(|s| s.trim_start().to_string())
-        .collect();
-    if line_iter.len() == 1 {
-        return;
-    }
-
-    let position = line_iter.remove(0);
-    let description = line_iter.join(" ");
+fn parse_location(line_iter: Vec<String>, locations: &mut HashMap<String, String>) {
+    let position = line_iter[0].to_string();
+    let description = line_iter[1..].join(" ");
 
     if locations.contains_key(&position) {
         let update_with = locations.get(&position).unwrap().to_owned();
@@ -192,16 +186,8 @@ fn parse_location(line: &str, locations: &mut HashMap<String, String>) {
     }
 }
 
-fn parse_vocabulary(line: &str, vocabulary: &mut HashMap<String, String>) {
-    let mut line_iter: Vec<String> = line
-        .split_whitespace()
-        .map(|s| s.trim_start().to_string())
-        .collect();
-    if line_iter.len() == 1 {
-        return;
-    }
-
-    let value = line_iter.remove(0);
-    let verb = line_iter.join(" ");
+fn parse_vocabulary(line_iter: Vec<String>, vocabulary: &mut HashMap<String, String>) {
+    let value = line_iter[0].to_string();
+    let verb = line_iter[1..].join(" ");
     vocabulary.insert(verb, value);
 }
