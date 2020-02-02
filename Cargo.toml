@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["Rajib Ahmed <rajib.ahmed@klarna.com>"]
 
 [dependencies]
+colored = "1.9"

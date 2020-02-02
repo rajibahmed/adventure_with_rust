@@ -29,6 +29,21 @@ pub struct Node {
     motions: Vec<i32>,
 }
 
+#[derive(Debug)]
+pub struct Element {
+    object: String,
+    locations: Vec<String>,
+}
+
+impl Element {
+    fn new(object: String, locations: Vec<String>) -> Self {
+        Element {
+            object: object,
+            locations: locations,
+        }
+    }
+}
+
 impl Node {
     fn new(x: i32, y: i32, motions: Vec<i32>) -> Node {
         Node {
@@ -53,6 +68,7 @@ pub struct GameMap {
     pub vocabulary: HashMap<String, String>,
     pub maps: HashMap<String, Vec<Node>>,
     pub arbitary: HashMap<String, String>,
+    pub objects: HashMap<String, Element>,
 }
 
 impl GameMap {
@@ -61,12 +77,14 @@ impl GameMap {
         maps: HashMap<String, Vec<Node>>,
         vocabulary: HashMap<String, String>,
         arbitary: HashMap<String, String>,
+        objects: HashMap<String, Element>,
     ) -> GameMap {
         GameMap {
             descriptions: descriptions,
             maps: maps,
             vocabulary: vocabulary,
             arbitary: arbitary,
+            objects: objects,
         }
     }
 
@@ -91,6 +109,8 @@ pub fn parse() -> GameMap {
     let mut maps: HashMap<String, Vec<Node>> = HashMap::new();
     let mut vocabulary: HashMap<String, String> = HashMap::new();
     let mut arbitary: HashMap<String, String> = HashMap::new();
+    let mut objects: HashMap<String, Element> = HashMap::new();
+    let mut action_verbs: HashMap<String, String> = HashMap::new();
 
     let mut section = 1;
     for line in game_data.lines() {
@@ -107,11 +127,13 @@ pub fn parse() -> GameMap {
             3 => parse_travel_table(line_iter, &mut maps),
             4 => parse_vocabulary(line_iter, &mut vocabulary),
             6 => parse_location(line_iter, &mut arbitary),
+            7 => parse_objects(line_iter, &mut objects),
+            // 8 => parse_action_verb(line_iter, &mut action_verbs),
             _ => (),
         }
     }
 
-    GameMap::new(descriptions, maps, vocabulary, arbitary)
+    GameMap::new(descriptions, maps, vocabulary, arbitary, objects)
 }
 
 fn split_line(line: &str) -> Vec<String> {
@@ -174,6 +196,22 @@ fn parse_travel_table(line_iter: Vec<String>, maps: &mut HashMap<String, Vec<Nod
     }
     nodes.push(Node::new(*x, *y, motions));
     maps.insert(x.to_string(), nodes);
+}
+
+fn parse_objects(line_iter: Vec<String>, objects: &mut HashMap<String, Element>) {
+    let object = &line_iter[0].to_string();
+    let locations: Vec<String> = line_iter.iter().skip(1).map(ToString::to_string).collect();
+    if locations.len() == 0 {
+        let locations = vec!["0".to_string()];
+        objects.insert(
+            object.to_string(),
+            Element::new(object.to_string(), locations),
+        );
+    }
+    objects.insert(
+        object.to_string(),
+        Element::new(object.to_string(), locations),
+    );
 }
 
 fn parse_location(line_iter: Vec<String>, locations: &mut HashMap<String, String>) {
