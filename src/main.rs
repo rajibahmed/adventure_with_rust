@@ -45,6 +45,10 @@ fn main() {
 
         gamer = gamer.update_verb(input.verb.to_string());
         let change_to: Option<&Node> = game_map.change_location(&gamer);
-        gamer = gamer.update_location(change_to.unwrap());
+
+        match change_to {
+            Some(change_to) => gamer = gamer.update_location(change_to),
+            None => (),
+        }
     }
 }

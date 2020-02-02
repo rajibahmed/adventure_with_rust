@@ -48,13 +48,11 @@ impl Node {
     }
 }
 
-#[allow(dead_code)]
-struct Element {}
-
 pub struct GameMap {
     pub descriptions: HashMap<String, String>,
     pub vocabulary: HashMap<String, String>,
     pub maps: HashMap<String, Vec<Node>>,
+    pub arbitary: HashMap<String, String>,
 }
 
 impl GameMap {
@@ -62,11 +60,13 @@ impl GameMap {
         descriptions: HashMap<String, String>,
         maps: HashMap<String, Vec<Node>>,
         vocabulary: HashMap<String, String>,
+        arbitary: HashMap<String, String>,
     ) -> GameMap {
         GameMap {
             descriptions: descriptions,
             maps: maps,
             vocabulary: vocabulary,
+            arbitary: arbitary,
         }
     }
 
@@ -90,6 +90,7 @@ pub fn parse() -> GameMap {
     let mut descriptions: HashMap<String, String> = HashMap::new();
     let mut maps: HashMap<String, Vec<Node>> = HashMap::new();
     let mut vocabulary: HashMap<String, String> = HashMap::new();
+    let mut arbitary: HashMap<String, String> = HashMap::new();
 
     let mut section = 1;
     for line in game_data.lines() {
@@ -97,7 +98,7 @@ pub fn parse() -> GameMap {
             section = section + 1;
         }
 
-        let line_iter = splitLine(line);
+        let line_iter = split_line(line);
         if line_iter.len() == 1 {
             continue;
         }
@@ -105,14 +106,15 @@ pub fn parse() -> GameMap {
             1 => parse_location(line_iter, &mut descriptions),
             3 => parse_travel_table(line_iter, &mut maps),
             4 => parse_vocabulary(line_iter, &mut vocabulary),
+            6 => parse_location(line_iter, &mut arbitary),
             _ => (),
         }
     }
 
-    GameMap::new(descriptions, maps, vocabulary)
+    GameMap::new(descriptions, maps, vocabulary, arbitary)
 }
 
-fn splitLine(line: &str) -> Vec<String> {
+fn split_line(line: &str) -> Vec<String> {
     line.split_whitespace()
         .map(|s| s.trim().to_string())
         .collect()
