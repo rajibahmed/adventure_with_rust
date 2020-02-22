@@ -37,7 +37,7 @@ fn main() {
                 .green()
         );
 
-        print!("~ ");
+        print!("{}", "~ ");
         io::stdout().flush().unwrap();
 
         let input = user_input::get();

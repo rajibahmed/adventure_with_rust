@@ -2,25 +2,6 @@ use std::collections::HashMap;
 use std::{fs::read_to_string, path::Path};
 
 use player::Player;
-//  ADVENTURES
-//
-//  CURRENT LIMITS:
-//      9650 WORDS OF MESSAGE TEXT (LINES, LINSIZ).
-//	750 TRAVEL OPTIONS (TRAVEL, TRVSIZ).
-//	300 VOCABULARY WORDS (KTAB, ATAB, TABSIZ).
-//	150 LOCATIONS (LTEXT, STEXT, KEY, COND, ABB, ATLOC, LOCSIZ).
-//	100 OBJECTS (PLAC, PLACE, FIXD, FIXED, LINK (TWICE), PTEXT, PROP).
-//	 35 "ACTION" VERBS (ACTSPK, VRBSIZ).
-//	205 RANDOM MESSAGES (RTEXT, RTXSIZ).
-//	 12 DIFFERENT PLAYER CLASSIFICATIONS (CTEXT, CVAL, CLSMAX).
-//	 20 HINTS, LESS 3 (HINTLC, HINTED, HINTS, HNTSIZ).
-//	 35 MAGIC MESSAGES (MTEXT, MAGSIZ).
-//  THERE ARE ALSO LIMITS WHICH CANNOT BE EXCEEDED DUE TO THE STRUCTURE OF
-//  THE DATABASE.  (E.G., THE VOCABULARY USES N/1000 TO DETERMINE WORD TYPE,
-//  SO THERE CAN'T BE MORE THAN 1000 WORDS.)  THESE UPPER LIMITS ARE:
-//	1000 NON-SYNONYMOUS VOCABULARY WORDS
-//	300 LOCATIONS
-//	100 OBJECTS
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {
@@ -69,6 +50,7 @@ pub struct GameMap {
     pub maps: HashMap<String, Vec<Node>>,
     pub arbitary: HashMap<String, String>,
     pub objects: HashMap<String, Element>,
+    pub action_verbs: HashMap<String, String>,
 }
 
 impl GameMap {
@@ -78,6 +60,7 @@ impl GameMap {
         vocabulary: HashMap<String, String>,
         arbitary: HashMap<String, String>,
         objects: HashMap<String, Element>,
+        action_verbs: HashMap<String, String>,
     ) -> GameMap {
         GameMap {
             descriptions: descriptions,
@@ -85,6 +68,7 @@ impl GameMap {
             vocabulary: vocabulary,
             arbitary: arbitary,
             objects: objects,
+            action_verbs: action_verbs,
         }
     }
 
@@ -128,12 +112,19 @@ pub fn parse() -> GameMap {
             4 => parse_vocabulary(line_iter, &mut vocabulary),
             6 => parse_location(line_iter, &mut arbitary),
             7 => parse_objects(line_iter, &mut objects),
-            // 8 => parse_action_verb(line_iter, &mut action_verbs),
+            8 => parse_action_verb(line_iter, &mut action_verbs),
             _ => (),
         }
     }
 
-    GameMap::new(descriptions, maps, vocabulary, arbitary, objects)
+    GameMap::new(
+        descriptions,
+        maps,
+        vocabulary,
+        arbitary,
+        objects,
+        action_verbs,
+    )
 }
 
 fn split_line(line: &str) -> Vec<String> {
@@ -230,4 +221,10 @@ fn parse_vocabulary(line_iter: Vec<String>, vocabulary: &mut HashMap<String, Str
     let value = line_iter[0].to_string();
     let verb = line_iter[1..].join(" ");
     vocabulary.insert(verb, value);
+}
+
+fn parse_action_verb(line_iter: Vec<String>, action_verbs: &mut HashMap<String, String>) {
+    let action = line_iter[0].to_string();
+    let verb = line_iter[1].to_string();
+    action_verbs.insert(action, verb);
 }
