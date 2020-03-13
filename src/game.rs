@@ -35,12 +35,46 @@ impl Node {
     }
 
     pub fn next_location(&self) -> i32 {
-        self.y
+        let n = self.get_n();
+        let m = self.get_m();
+
+        match (n, m) {
+            (.., 101..=200) => {
+                //check for stuff object m-100
+                println!("check object m-100");
+                self.x
+            }
+            (.., 201..=300) => {
+                // MUST BE CARRYING OR IN SAME ROOM AS M-200
+                println!("check object m-200");
+                self.x
+            }
+            // base condition
+            (0..=300, m) if m == 0 || m == 100 => {
+                println!("base condiftion");
+                self.y
+            }
+            // return with probability
+            (0..=300, 1..=99) => {
+                println!("base condiftion");
+                self.y
+            }
+            //N-300 IS USED IN A COMPUTED GOTO TO
+            //A SECTION OF SPECIAL CODE.
+            (300..=500, _) => self.x,
+            // MESSAGE N-500 FROM SECTION 6 IS PRINTED,
+            // AND HE STAYS WHEREVER HE IS.
+            (500..=10000, _) => self.x,
+            _ => self.x,
+        }
     }
 
-    #[allow(dead_code)]
-    fn can_move(&self) -> bool {
-        self.y <= 300
+    fn get_n(&self) -> i32 {
+        self.y % 1000
+    }
+
+    fn get_m(&self) -> i32 {
+        self.y / 1000
     }
 }
 
@@ -72,13 +106,44 @@ impl GameMap {
         }
     }
 
+    //  SECTION 4: VOCABULARY.  EACH LINE CONTAINS A NUMBER (N), A TAB, AND A
+    //	FIVE-LETTER WORD.  CALL M=N/1000.  IF M=0, THEN THE WORD IS A MOTION
+    //	VERB FOR USE IN TRAVELLING (SEE SECTION 3).  ELSE, IF M=1, THE WORD IS
+    //	AN OBJECT.  ELSE, IF M=2, THE WORD IS AN ACTION VERB (SUCH AS "CARRY"
+    //	OR "ATTACK").  ELSE, IF M=3, THE WORD IS A SPECIAL CASE VERB (SUCH AS
+    //	"DIG") AND N MOD 1000 IS AN INDEX INTO SECTION 6.  OBJECTS FROM 50 TO
+    //	(CURRENTLY, ANYWAY) 79 ARE CONSIDERED TREASURES (FOR PIRATE, CLOSEOUT).
     pub fn change_location(&self, gamer: &Player) -> Option<&Node> {
         let verb = self.vocabulary.get(&gamer.verb).unwrap();
         let nodes = self.maps.get(&gamer.location).unwrap();
 
+        let n = verb.parse::<i32>().unwrap();
+        let m = n % 1000;
+
+        let mut find_at = verb.clone();
+
+        match n / 1000 {
+            1 => {
+                println!("1 {}", verb);
+                find_at = m.to_string();
+            }
+            2 => {
+                find_at = m.to_string();
+                println!("2 {}", verb);
+                // word is action verb
+            }
+            3 => {
+                find_at = m.to_string();
+                println!("3 {}", find_at);
+            }
+            _ => {
+                println!("{}.. {}", n, verb);
+            }
+        };
+
         let node = nodes
             .iter()
-            .find(|&n| n.motions.iter().any(|&m| m.to_string() == verb.trim()));
+            .find(|&n| n.motions.iter().any(|&m| m.to_string() == find_at));
         node
     }
 
@@ -137,24 +202,6 @@ fn load() -> String {
     read_to_string(Path::new("./src/advent.dat")).expect("Somethis whent wrong")
 }
 
-//  SECTION 3: TRAVEL TABLE.  EACH LINE CONTAINS A LOCATION NUMBER (X), A SECOND
-//	LOCATION NUMBER (Y), AND A LIST OF MOTION NUMBERS (SEE SECTION 4).
-//	EACH MOTION REPRESENTS A VERB WHICH WILL GO TO Y IF CURRENTLY AT X.
-//	Y, IN TURN, IS INTERPRETED AS FOLLOWS.  LET M=Y/1000, N=Y MOD 1000.
-//		IF N<=300	IT IS THE LOCATION TO GO TO.
-//		IF 300<N<=500	N-300 IS USED IN A COMPUTED GOTO TO
-//					A SECTION OF SPECIAL CODE.
-//		IF N>500	MESSAGE N-500 FROM SECTION 6 IS PRINTED,
-//					AND HE STAYS WHEREVER HE IS.
-//	MEANWHILE, M SPECIFIES THE CONDITIONS ON THE MOTION.
-//		IF M=0		IT'S UNCONDITIONAL.
-//		IF 0<M<100	IT IS DONE WITH M% PROBABILITY.
-//		IF M=100	UNCONDITIONAL, BUT FORBIDDEN TO DWARVES.
-//		IF 100<M<=200	HE MUST BE CARRYING OBJECT M-100.
-//		IF 200<M<=300	MUST BE CARRYING OR IN SAME ROOM AS M-200.
-//		IF 300<M<=400	PROP(M MOD 100) MUST *NOT* BE 0.
-//		IF 400<M<=500	PROP(M MOD 100) MUST *NOT* BE 1.
-//		IF 500<M<=600	PROP(M MOD 100) MUST *NOT* BE 2, ETC.
 //	IF THE CONDITION (IF ANY) IS NOT MET, THEN THE NEXT *DIFFERENT*
 //	"DESTINATION" VALUE IS USED (UNLESS IT FAILS TO MEET *ITS* CONDITIONS,
 //	IN WHICH CASE THE NEXT IS FOUND, ETC.).  TYPICALLY, THE NEXT DEST WILL
