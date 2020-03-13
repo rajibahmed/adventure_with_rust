@@ -145,7 +145,7 @@ impl GameMap {
                 println!("{}.. {}", n, verb);
                 None
             }
-        };
+        }
     }
 
     pub fn valid_verb(&self, verb: &String) -> bool {
