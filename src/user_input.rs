@@ -1,26 +1,15 @@
 use std::io;
 
-pub enum Direction {
-    UP,
-}
-
-impl Default for Direction {
-    fn default() -> Self {
-        Direction::UP
-    }
-}
-
-#[derive(Default)]
 pub struct Input {
     pub verb: String,
-    pub direction: Direction,
+    pub noun: String,
 }
 
 impl Input {
-    fn new(verb: String) -> Input {
+    fn new(verb: String, noun: String) -> Input {
         Input {
             verb: verb.to_uppercase(),
-            ..Default::default()
+            noun: noun.to_uppercase(),
         }
     }
 }
@@ -31,12 +20,16 @@ pub fn get() -> Input {
         Ok(_goes_into_input_above) => {}
         Err(_no_updates_is_fine) => {}
     }
-    let mut inputs: Vec<String> = input
+    let inputs: Vec<String> = input
         .trim()
         .to_string()
         .split_whitespace()
         .map(str::to_string)
         .collect();
 
-    Input::new(inputs.remove(0))
+    match (inputs.get(0), inputs.get(1)) {
+        (Some(verb), Some(noun)) => Input::new(verb.clone(), noun.clone()),
+        (Some(verb), None) => Input::new(verb.clone(), "".to_string()),
+        (None, _) => panic!("You must provide an input"),
+    }
 }
