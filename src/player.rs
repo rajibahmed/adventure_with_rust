@@ -1,9 +1,12 @@
 use game::Node;
+use user_input::Input;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Player {
     pub name: String,
     pub location: String,
     pub verb: String,
+    pub noun: String,
 }
 
 impl Player {
@@ -20,9 +23,10 @@ impl Player {
             ..self
         }
     }
-    pub fn update_verb(self, verb: String) -> Self {
+    pub fn update_input(self, input: &Input) -> Self {
         Player {
-            verb: verb.clone(),
+            verb: input.verb.clone(),
+            noun: input.noun.clone(),
             ..self
         }
     }
@@ -38,6 +42,7 @@ impl Default for Player {
             name: "".to_string(),
             location: "1".to_string(),
             verb: "".to_string(),
+            noun: "".to_string(),
         }
     }
 }

@@ -54,7 +54,7 @@ fn main() {
             continue;
         }
 
-        gamer = gamer.update_verb(input.verb.to_string());
+        gamer = gamer.update_input(&input);
         let change_to: Option<&Node> = game_map.change_location(&gamer);
 
         match change_to {
