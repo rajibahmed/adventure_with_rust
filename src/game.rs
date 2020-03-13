@@ -115,36 +115,37 @@ impl GameMap {
     //	(CURRENTLY, ANYWAY) 79 ARE CONSIDERED TREASURES (FOR PIRATE, CLOSEOUT).
     pub fn change_location(&self, gamer: &Player) -> Option<&Node> {
         let verb = self.vocabulary.get(&gamer.verb).unwrap();
+        // let noun = &gamer.noun;
         let nodes = self.maps.get(&gamer.location).unwrap();
 
         let n = verb.parse::<i32>().unwrap();
         let m = n % 1000;
 
-        let mut find_at = verb.clone();
-
         match n / 1000 {
+            0 => {
+                println!("is motion {}", verb);
+                let node = nodes
+                    .iter()
+                    .find(|&n| n.motions.iter().any(|&m| m.to_string() == verb.trim()));
+                node
+            }
             1 => {
-                println!("1 {}", verb);
-                find_at = m.to_string();
+                println!("is object {}", verb);
+                None
             }
             2 => {
-                find_at = m.to_string();
-                println!("2 {}", verb);
-                // word is action verb
+                println!("is action {}", verb);
+                None
             }
             3 => {
-                find_at = m.to_string();
-                println!("3 {}", find_at);
+                //&gamer.add_message()
+                None
             }
             _ => {
                 println!("{}.. {}", n, verb);
+                None
             }
         };
-
-        let node = nodes
-            .iter()
-            .find(|&n| n.motions.iter().any(|&m| m.to_string() == find_at));
-        node
     }
 
     pub fn valid_verb(&self, verb: &String) -> bool {

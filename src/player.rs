@@ -7,6 +7,7 @@ pub struct Player {
     pub location: String,
     pub verb: String,
     pub noun: String,
+    pub message: String,
 }
 
 impl Player {
@@ -43,6 +44,7 @@ impl Default for Player {
             location: "1".to_string(),
             verb: "".to_string(),
             noun: "".to_string(),
+            message: "".to_string(),
         }
     }
 }
