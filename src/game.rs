@@ -11,16 +11,35 @@ pub struct Node {
 }
 
 #[derive(Debug)]
-pub struct Element {
-    object: String,
+pub struct Object {
+    id: String,
     locations: Vec<String>,
 }
 
-impl Element {
+impl Object {
     fn new(object: String, locations: Vec<String>) -> Self {
-        Element {
-            object: object,
+        Object {
+            id: object,
             locations: locations,
+        }
+    }
+
+    #[allow(dead_code)]
+    fn moveable(&self) -> bool {
+        self.locations.last().unwrap() == "-1"
+    }
+}
+
+pub struct ObjectDescription {
+    inventory_message: String,
+    description_message: String,
+}
+
+impl ObjectDescription {
+    fn new(inventory_message: String, description_message: String) -> Self {
+        ObjectDescription {
+            inventory_message: inventory_message,
+            description_message: description_message,
         }
     }
 }
@@ -61,10 +80,17 @@ impl Node {
             }
             //N-300 IS USED IN A COMPUTED GOTO TO
             //A SECTION OF SPECIAL CODE.
-            (300..=500, _) => self.x,
+            (300..=500, _) => {
+                // test
+                self.x
+            }
             // MESSAGE N-500 FROM SECTION 6 IS PRINTED,
             // AND HE STAYS WHEREVER HE IS.
-            (500..=10000, _) => self.x,
+            (500..=10000, _) => {
+                let message_key = (n - 500).to_string();
+                println!("message_key .. {}", message_key);
+                self.x
+            }
             _ => self.x,
         }
     }
@@ -83,7 +109,8 @@ pub struct GameMap {
     pub vocabulary: HashMap<String, String>,
     pub maps: HashMap<String, Vec<Node>>,
     pub arbitary: HashMap<String, String>,
-    pub objects: HashMap<String, Element>,
+    pub objects: HashMap<String, Object>,
+    pub object_descriptions: HashMap<String, ObjectDescription>,
     pub action_verbs: HashMap<String, String>,
 }
 
@@ -93,7 +120,8 @@ impl GameMap {
         maps: HashMap<String, Vec<Node>>,
         vocabulary: HashMap<String, String>,
         arbitary: HashMap<String, String>,
-        objects: HashMap<String, Element>,
+        objects: HashMap<String, Object>,
+        object_descriptions: HashMap<String, ObjectDescription>,
         action_verbs: HashMap<String, String>,
     ) -> GameMap {
         GameMap {
@@ -102,6 +130,7 @@ impl GameMap {
             vocabulary: vocabulary,
             arbitary: arbitary,
             objects: objects,
+            object_descriptions: object_descriptions,
             action_verbs: action_verbs,
         }
     }
@@ -115,7 +144,7 @@ impl GameMap {
     //	(CURRENTLY, ANYWAY) 79 ARE CONSIDERED TREASURES (FOR PIRATE, CLOSEOUT).
     pub fn change_location(&self, gamer: &Player) -> Option<&Node> {
         let verb = self.vocabulary.get(&gamer.verb).unwrap();
-        // let noun = &gamer.noun;
+        let noun = &gamer.noun;
         let nodes = self.maps.get(&gamer.location).unwrap();
 
         let n = verb.parse::<i32>().unwrap();
@@ -130,11 +159,11 @@ impl GameMap {
                 node
             }
             1 => {
-                println!("is object {}", verb);
+                println!("is object {}", noun);
                 None
             }
             2 => {
-                println!("is action {}", verb);
+                println!("is action {}", noun);
                 None
             }
             3 => {
@@ -159,7 +188,8 @@ pub fn parse() -> GameMap {
     let mut maps: HashMap<String, Vec<Node>> = HashMap::new();
     let mut vocabulary: HashMap<String, String> = HashMap::new();
     let mut arbitary: HashMap<String, String> = HashMap::new();
-    let mut objects: HashMap<String, Element> = HashMap::new();
+    let mut objects: HashMap<String, Object> = HashMap::new();
+    let mut object_descriptions: HashMap<String, ObjectDescription> = HashMap::new();
     let mut action_verbs: HashMap<String, String> = HashMap::new();
 
     let mut section = 1;
@@ -176,6 +206,7 @@ pub fn parse() -> GameMap {
             1 => parse_location(line_iter, &mut descriptions),
             3 => parse_travel_table(line_iter, &mut maps),
             4 => parse_vocabulary(line_iter, &mut vocabulary),
+            5 => parse_object_descriptions(line_iter, &mut object_descriptions),
             6 => parse_location(line_iter, &mut arbitary),
             7 => parse_objects(line_iter, &mut objects),
             8 => parse_action_verb(line_iter, &mut action_verbs),
@@ -189,6 +220,7 @@ pub fn parse() -> GameMap {
         vocabulary,
         arbitary,
         objects,
+        object_descriptions,
         action_verbs,
     )
 }
@@ -237,20 +269,49 @@ fn parse_travel_table(line_iter: Vec<String>, maps: &mut HashMap<String, Vec<Nod
     maps.insert(x.to_string(), nodes);
 }
 
-fn parse_objects(line_iter: Vec<String>, objects: &mut HashMap<String, Element>) {
+fn parse_objects(line_iter: Vec<String>, objects: &mut HashMap<String, Object>) {
     let object = &line_iter[0].to_string();
     let locations: Vec<String> = line_iter.iter().skip(1).map(ToString::to_string).collect();
     if locations.len() == 0 {
         let locations = vec!["0".to_string()];
         objects.insert(
             object.to_string(),
-            Element::new(object.to_string(), locations),
+            Object::new(object.to_string(), locations),
         );
     }
     objects.insert(
         object.to_string(),
-        Element::new(object.to_string(), locations),
+        Object::new(object.to_string(), locations),
     );
+}
+
+fn parse_object_descriptions(
+    line_iter: Vec<String>,
+    object_descriptions: &mut HashMap<String, ObjectDescription>,
+) {
+    let position = line_iter[0].to_string();
+    let description = line_iter[1..].join(" ");
+
+    let position_number = position.parse::<i32>().unwrap();
+
+    if position_number > 0 && position_number < 100 {
+        object_descriptions.insert(
+            position,
+            ObjectDescription::new(description.to_string(), "".to_string()),
+        );
+    } else {
+        let index = object_descriptions.keys().last().cloned();
+        match index {
+            Some(index) => {
+                let od = object_descriptions.get(&index).unwrap();
+                let desc = format!("{} \n {}", od.description_message, description.to_string());
+
+                let x = object_descriptions.get_mut(&index).unwrap();
+                x.description_message = desc;
+            }
+            None => {}
+        }
+    }
 }
 
 fn parse_location(line_iter: Vec<String>, locations: &mut HashMap<String, String>) {

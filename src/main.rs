@@ -41,10 +41,7 @@ fn main() {
         io::stdout().flush().unwrap();
 
         let input = user_input::get();
-        if input.verb == "quit" {
-            format!("{}", String::from("Sorry to see you go!!").red());
-            break;
-        }
+
         if !game_map.valid_verb(&input.verb) {
             format!(
                 "{} {}",
