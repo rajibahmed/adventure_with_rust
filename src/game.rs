@@ -12,7 +12,7 @@ pub struct Node {
 
 #[derive(Debug)]
 pub struct Object {
-    id: String,
+    pub id: String,
     locations: Vec<String>,
 }
 
@@ -24,6 +24,10 @@ impl Object {
         }
     }
 
+    pub fn location_contains(&self, loc: String) -> bool {
+        self.locations.contains(&loc)
+    }
+
     #[allow(dead_code)]
     fn moveable(&self) -> bool {
         self.locations.last().unwrap() == "-1"
@@ -31,8 +35,8 @@ impl Object {
 }
 
 pub struct ObjectDescription {
-    inventory_message: String,
-    description_message: String,
+    pub inventory_message: String,
+    pub description_message: String,
 }
 
 impl ObjectDescription {

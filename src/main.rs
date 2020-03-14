@@ -37,6 +37,16 @@ fn main() {
                 .green()
         );
 
+        for (k, o) in game_map
+            .objects
+            .iter()
+            .filter(|&(_, object)| object.location_contains(gamer.get_location()))
+        {
+            if let Some(x) = game_map.object_descriptions.get(&o.id) {
+                println!("{}", x.description_message);
+            }
+        }
+
         print!("{}", "~ ");
         io::stdout().flush().unwrap();
 
